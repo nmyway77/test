@@ -26,8 +26,6 @@
       background: #f0f0f0; border-radius: 4px;
     }
   </style>
-  <!-- ResponsiveVoice JS 추가: 무료 TTS 라이브러리 -->
-  <script src="https://code.responsivevoice.org/responsivevoice.js?key="></script>
 </head>
 <body>
   <button id="showWords">단어 목록 전체 보기</button>
@@ -50,13 +48,22 @@
       const wordListDiv = document.getElementById('wordList');
       const meaningBox = document.getElementById('meaningBox');
 
+      // TTS 발음 재생 (Web Speech API 우선, 실패 시 Google TTS)
       function speak(word) {
-        // ResponsiveVoice 라이브러리 사용: 미국 영어 발음
-        if (responsiveVoice) {
-          responsiveVoice.speak(word, 'US English Female');
-        } else {
-          console.error('ResponsiveVoice 라이브러리 로드 실패');
+        if (window.speechSynthesis && 'SpeechSynthesisUtterance' in window) {
+          try {
+            const utter = new SpeechSynthesisUtterance(word);
+            utter.lang = 'en-US';
+            speechSynthesis.speak(utter);
+            return;
+          } catch (e) {
+            console.warn('Web Speech API 실패, Google TTS로 대체:', e);
+          }
         }
+        // Google Translate TTS fallback
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(word)}`;
+        const audio = new Audio(url);
+        audio.play().catch(err => console.error('Audio 재생 실패:', err));
       }
 
       function renderWords() {
