@@ -5,51 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>수능완성 2000 – 단어 클릭 및 뜻 보기 예제</title>
   <style>
-    /* 기본 레이아웃 */
     body { font-family: Arial, sans-serif; margin: 0; padding: 10px; }
-    /* 버튼 스타일 */
     #showWords {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #4CAF50;
-      color: white;
-      border: 2px solid #4CAF50;
-      border-radius: 8px;
-      cursor: pointer;
-      outline: none;
-      margin-bottom: 10px;
+      padding: 10px 20px; font-size: 16px;
+      background-color: #4CAF50; color: white;
+      border: 2px solid #4CAF50; border-radius: 8px;
+      cursor: pointer; outline: none; margin-bottom: 10px;
     }
-    #showWords:hover {
-      background-color: white;
-      color: #4CAF50;
-    }
-    /* 의미 박스: sticky 설정으로 항상 상단에 보이게 */
+    #showWords:hover { background-color: white; color: #4CAF50; }
     #meaningBox {
-      position: sticky;
-      top: 0;
-      background: #fff;
-      padding: 10px;
-      font-size: 18px;
-      color: #333;
-      border-bottom: 1px solid #ccc;
-      z-index: 10;
+      position: sticky; top: 0; background: #fff;
+      padding: 10px; font-size: 18px; color: #333;
+      border-bottom: 1px solid #ccc; z-index: 10;
       margin-bottom: 10px;
     }
-    /* 단어 목록 및 섹션 헤딩 */
     #wordList { padding-bottom: 20px; }
-    .lessonHeading {
-      margin-top: 20px;
-      font-size: 20px;
-      font-weight: bold;
-    }
-    .wordItem {
-      display: inline-block;
-      font-size: 20px;
-      cursor: pointer;
-      margin: 5px;
-      padding: 5px 10px;
-      background: #f0f0f0;
-      border-radius: 4px;
+    .lessonHeading { margin-top: 20px; font-size: 20px; font-weight: bold; }
+    .wordItem { display: inline-block; font-size: 20px;
+      cursor: pointer; margin: 5px; padding: 5px 10px;
+      background: #f0f0f0; border-radius: 4px;
     }
   </style>
 </head>
@@ -60,7 +34,6 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 섹션과 단어 데이터
       const dictionary = [
         { heading: '1과 단어' },
         { word: 'apple',     meaning: '사과' },
@@ -75,7 +48,13 @@
       const wordListDiv = document.getElementById('wordList');
       const meaningBox = document.getElementById('meaningBox');
 
-      // 단어 렌더링 함수
+      // Google Translate TTS를 이용한 발음 재생
+      function speak(word) {
+        const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(word)}`;
+        const audio = new Audio(url);
+        audio.play();
+      }
+
       function renderWords() {
         wordListDiv.innerHTML = '';
         dictionary.forEach(entry => {
@@ -89,19 +68,14 @@
             span.textContent = entry.word;
             span.className = 'wordItem';
             span.addEventListener('click', () => {
-              // 클릭 시 의미 갱신
               meaningBox.textContent = `${entry.word} → ${entry.meaning}`;
-              // 발음 재생
-              const utter = new SpeechSynthesisUtterance(entry.word);
-              utter.lang = 'en-US';
-              speechSynthesis.speak(utter);
+              speak(entry.word);
             });
             wordListDiv.appendChild(span);
           }
         });
       }
 
-      // 버튼 및 초기 렌더링 바인딩
       showBtn.addEventListener('click', renderWords);
       renderWords();
     });
