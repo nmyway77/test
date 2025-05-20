@@ -48,36 +48,23 @@
       const wordListDiv = document.getElementById('wordList');
       const meaningBox = document.getElementById('meaningBox');
 
-      let defaultVoice = null;
-      // 보이스 목록 로드 및 플랫폼별 기본 Voice 설정
-      function loadVoices() {
-        const voices = speechSynthesis.getVoices();
-        // Android: Google US English
-        defaultVoice = voices.find(v => v.name.includes('Google US English'))
-          // iOS: Samantha 또는 Karen
-          || voices.find(v => /Samantha|Karen/.test(v.name) && v.lang === 'en-US')
-          // PC: any en-US female
-          || voices.find(v => v.lang === 'en-US' && /female/i.test(v.name))
-          // fallback: any en-US
-          || voices.find(v => v.lang === 'en-US')
-          // 마지막 fallback
-          || voices[0] || null;
-      }
-      speechSynthesis.onvoiceschanged = loadVoices;
-      loadVoices();
-
-      function speak(word) {
-        if ('speechSynthesis' in window && defaultVoice) {
-          speechSynthesis.cancel();
-          const utter = new SpeechSynthesisUtterance(word);
-          utter.voice = defaultVoice;
-          utter.lang = defaultVoice.lang || 'en-US';
-          speechSynthesis.speak(utter);
-        } else {
-          console.error('TTS 사용 불가 또는 voice 미설정');
+      // 단어 클릭 시 뜻 표시 및 발음
+      function handleClick(entry) {
+        meaningBox.textContent = `${entry.word} → ${entry.meaning}`;
+        // Web Speech API 사용 가능 시 en-US 발음
+        if ('speechSynthesis' in window) {
+          try {
+            const utter = new SpeechSynthesisUtterance(entry.word);
+            utter.lang = 'en-US';
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utter);
+          } catch (e) {
+            console.warn('SpeechSynthesis 오류:', e);
+          }
         }
       }
 
+      // 단어 목록 렌더링
       function renderWords() {
         wordListDiv.innerHTML = '';
         dictionary.forEach(entry => {
@@ -90,10 +77,7 @@
             const span = document.createElement('span');
             span.textContent = entry.word;
             span.className = 'wordItem';
-            span.addEventListener('click', () => {
-              meaningBox.textContent = `${entry.word} → ${entry.meaning}`;
-              speak(entry.word);
-            });
+            span.addEventListener('click', () => handleClick(entry));
             wordListDiv.appendChild(span);
           }
         });
@@ -105,4 +89,5 @@
   </script>
 </body>
 </html>
+
 
