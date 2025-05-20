@@ -48,31 +48,36 @@
       const wordListDiv = document.getElementById('wordList');
       const meaningBox = document.getElementById('meaningBox');
 
-      // 보이스 목록 초기화
-      let voices = [];
+      let defaultVoice = null;
+      // 보이스 목록 로드 및 플랫폼별 기본 Voice 설정
       function loadVoices() {
-        voices = speechSynthesis.getVoices();
+        const voices = speechSynthesis.getVoices();
+        // Android: Google US English
+        defaultVoice = voices.find(v => v.name.includes('Google US English'))
+          // iOS: Samantha 또는 Karen
+          || voices.find(v => /Samantha|Karen/.test(v.name) && v.lang === 'en-US')
+          // PC: any en-US female
+          || voices.find(v => v.lang === 'en-US' && /female/i.test(v.name))
+          // fallback: any en-US
+          || voices.find(v => v.lang === 'en-US')
+          // 마지막 fallback
+          || voices[0] || null;
       }
       speechSynthesis.onvoiceschanged = loadVoices;
       loadVoices();
 
-      // TTS 발음 재생(무조건 en-US 여성)
       function speak(word) {
-        if ('speechSynthesis' in window) {
+        if ('speechSynthesis' in window && defaultVoice) {
           speechSynthesis.cancel();
           const utter = new SpeechSynthesisUtterance(word);
-          utter.lang = 'en-US';
-          // en-US 여성 보이스 선택
-          const female = voices.find(v => v.lang === 'en-US' && /female/i.test(v.name));
-          if (female) utter.voice = female;
+          utter.voice = defaultVoice;
+          utter.lang = defaultVoice.lang || 'en-US';
           speechSynthesis.speak(utter);
-          return;
+        } else {
+          console.error('TTS 사용 불가 또는 voice 미설정');
         }
-        // WebSpeech API 비지원 시 Fallback 없음
-        console.error('음성 합성 지원 불가');
       }
 
-      // 렌더링
       function renderWords() {
         wordListDiv.innerHTML = '';
         dictionary.forEach(entry => {
@@ -100,3 +105,4 @@
   </script>
 </body>
 </html>
+
