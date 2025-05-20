@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
@@ -48,24 +48,31 @@
       const wordListDiv = document.getElementById('wordList');
       const meaningBox = document.getElementById('meaningBox');
 
-      // TTS 발음 재생 (Web Speech API 우선, 실패 시 Google TTS)
+      // 보이스 목록 초기화
+      let voices = [];
+      function loadVoices() {
+        voices = speechSynthesis.getVoices();
+      }
+      speechSynthesis.onvoiceschanged = loadVoices;
+      loadVoices();
+
+      // TTS 발음 재생(무조건 en-US 여성)
       function speak(word) {
-        if (window.speechSynthesis && 'SpeechSynthesisUtterance' in window) {
-          try {
-            const utter = new SpeechSynthesisUtterance(word);
-            utter.lang = 'en-US';
-            speechSynthesis.speak(utter);
-            return;
-          } catch (e) {
-            console.warn('Web Speech API 실패, Google TTS로 대체:', e);
-          }
+        if ('speechSynthesis' in window) {
+          speechSynthesis.cancel();
+          const utter = new SpeechSynthesisUtterance(word);
+          utter.lang = 'en-US';
+          // en-US 여성 보이스 선택
+          const female = voices.find(v => v.lang === 'en-US' && /female/i.test(v.name));
+          if (female) utter.voice = female;
+          speechSynthesis.speak(utter);
+          return;
         }
-        // Google Translate TTS fallback
-        const url = `https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q=${encodeURIComponent(word)}`;
-        const audio = new Audio(url);
-        audio.play().catch(err => console.error('Audio 재생 실패:', err));
+        // WebSpeech API 비지원 시 Fallback 없음
+        console.error('음성 합성 지원 불가');
       }
 
+      // 렌더링
       function renderWords() {
         wordListDiv.innerHTML = '';
         dictionary.forEach(entry => {
