@@ -6,14 +6,9 @@
   <title>수능완성 2200 – 목동서로 영어학원 단어 학습</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; padding: 10px; background: #fafbfc; }
-    #meaningBox {
-      display: flex; align-items: center;
-      margin-bottom: 0;
-      background: #f9fbfc;
-      padding: 18px 10px 10px 10px;
-      border-radius: 12px 12px 0 0;
-      border-bottom: 1px solid #e0e0e0;
-      gap: 18px;
+    #topBar {
+      display: flex; align-items: center; gap: 18px;
+      margin-bottom: 18px;
     }
     .homeBtn {
       padding: 8px 18px;
@@ -31,8 +26,22 @@
       padding: 4px 18px; background: #fff;
       display: inline-block;
     }
-    #meaningText {
+    #initMessage {
       margin: 16px 0 16px 0; font-size: 1.2rem; color: #222;
+    }
+    #meaningBox {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      background: #f9fbfc;
+      padding: 18px 14px 18px 14px;
+      border-radius: 12px;
+      border: 1.5px solid #e0e0e0;
+      margin-bottom: 16px;
+      font-size: 1.2rem;
+      color: #222;
+      min-height: 54px;
+      gap: 18px;
     }
     #wordList { padding-bottom: 20px; }
     .wordItem {
@@ -48,20 +57,26 @@
     }
     .wordItem:hover { background: #d2ffd2; }
     @media (max-width: 600px) {
-      #meaningBox { flex-direction: column; gap: 10px; padding: 14px 6px 6px 6px; }
+      #topBar { flex-direction: column; gap: 10px; }
       #pageTitle { font-size: 1rem; padding: 3px 9px; }
-      #meaningText { font-size: 1rem; }
+      #initMessage, #meaningBox { font-size: 1rem; }
       .wordItem { font-size: 1rem; padding: 4px 10px; }
     }
   </style>
 </head>
 <body>
-  <div id="meaningBox">
+  <!-- 초기화면 상단 홈버튼+타이틀 -->
+  <div id="topBar">
     <button class="homeBtn" onclick="location.replace('https://nmyway77.github.io/home/');">홈으로</button>
     <span id="pageTitle">수능완성 2200 – [목동서로 영어학원]</span>
   </div>
-  <div id="meaningText">
+  <div id="initMessage">
     단어를 클릭하면 발음과 뜻이 나옵니다.
+  </div>
+  <!-- 단어 클릭시 나타나는 뜻+홈버튼 고정창 -->
+  <div id="meaningBox">
+    <span id="meaningText"></span>
+    <button class="homeBtn" onclick="location.replace('https://nmyway77.github.io/home/');">홈으로</button>
   </div>
   <div id="wordList"></div>
   <script>
@@ -73,7 +88,7 @@
       { word: "computer", meaning: "컴퓨터" }
     ];
 
-    // 미국식 여성음성 최적 선택
+    // 미국식 여성음성 강제 선택
     function speak(word) {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
@@ -101,7 +116,6 @@
           voices.find(v => v.lang === "en-US" && v.name && v.name.toLowerCase().includes("female")) ||
           voices.find(v => v.lang === "en-US") ||
           voices[0] || null;
-
         if (!voices.length) {
           window.speechSynthesis.onvoiceschanged = () => speak(word);
           return;
@@ -110,7 +124,7 @@
       }
     }
 
-    // 단어 목록 보여주기
+    // 단어 목록 표시
     function showWords() {
       const listDiv = document.getElementById('wordList');
       listDiv.innerHTML = "";
@@ -119,6 +133,10 @@
         span.textContent = item.word;
         span.className = "wordItem";
         span.onclick = () => {
+          // 상단바/초기 메시지 숨기고, 뜻 박스/홈버튼 보여줌
+          document.getElementById('topBar').style.display = "none";
+          document.getElementById('initMessage').style.display = "none";
+          document.getElementById('meaningBox').style.display = "flex";
           document.getElementById('meaningText').textContent = `${item.word} / ${item.meaning}`;
           speak(item.word);
         };
