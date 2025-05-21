@@ -3,98 +3,86 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>수능완성 2200 – 목동서로 영어학원 단어 학습</title>
+  <title>수능완성 2200 – 단어 클릭[목동서로학원]</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 10px; background: #fafbfc; }
-    #topBar {
-      display: flex; align-items: center; gap: 18px;
-      margin-bottom: 18px;
+    body { font-family: Arial, sans-serif; padding: 5px 20px; }
+    #showWords {
+      margin-bottom: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #4CAF50;
+      color: white;
+      border: 2px solid #4CAF50;
+      border-radius: 8px;
+      cursor: pointer;
+      outline: none;
+      display: inline-block;
+    }
+    #showWords:hover {
+      background-color: white;
+      color: #4CAF50;
+    }
+    #meaningBox {
+      position: sticky;
+      top: 60px;
+      background: #fff;
+      padding: 12px 20px;
+      font-size: 19px;
+      color: #333;
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 12px;
+      border-radius: 10px;
+      min-height: 28px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      box-shadow: 0 1px 6px rgba(60,60,60,0.07);
+    }
+    #wordList { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .lessonHeading {
+      display: block;
+      width: 100%;
+      margin: 20px 0 5px;
+      font-size: 20px;
+      font-weight: bold;
+      border-bottom: 1px solid #ccc;
+      padding-bottom: 4px;
+    }
+    .wordItem {
+      font-size: 18px;
+      cursor: pointer;
+      padding: 6px 12px;
+      background: #f0f0f0;
+      border-radius: 6px;
+      display: inline-block;
+      transition: background 0.15s;
+    }
+    .wordItem:hover {
+      background-color: #e2fbe0;
     }
     .homeBtn {
-      padding: 8px 18px;
-      border: none;
+      padding: 8px 16px;
       background: #2c3e50;
       color: #fff;
+      border: none;
       border-radius: 8px;
       cursor: pointer;
       font-size: 1rem;
+      margin-right: 10px;
     }
     .homeBtn:hover { background: #466080; }
-    #pageTitle {
-      border: 2px solid #4CAF50; color: #388e3c;
-      border-radius: 8px; font-size: 1.1rem;
-      padding: 4px 18px; background: #fff;
-      display: inline-block;
-    }
-    #initMessage {
-      margin: 16px 0 16px 0; font-size: 1.2rem; color: #222;
-    }
-    #meaningBox {
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      background: #f9fbfc;
-      padding: 18px 14px 18px 14px;
-      border-radius: 12px;
-      border: 1.5px solid #e0e0e0;
-      font-size: 1.2rem;
-      color: #222;
-      min-height: 54px;
-      gap: 18px;
-      position: fixed;
-      left: 50%;
-      top: 33vh;   /* 화면 세로 1/3 위치에 고정 */
-      transform: translateX(-50%);
-      width: 98vw;
-      max-width: 540px;
-      z-index: 1001;
-      box-shadow: 0 2px 18px rgba(60,60,60,0.11);
-    }
-    #wordList { padding-bottom: 20px; }
-    .wordItem {
-      display: inline-block;
-      font-size: 20px;
-      cursor: pointer;
-      margin: 5px;
-      padding: 5px 14px;
-      background: #f0f0f0;
-      border-radius: 4px;
-      transition: background 0.16s;
-      border: 1px solid #e0e0e0;
-    }
-    .wordItem:hover { background: #d2ffd2; }
-    @media (max-width: 600px) {
-      #topBar { flex-direction: column; gap: 10px; }
-      #pageTitle { font-size: 1rem; padding: 3px 9px; }
-      #initMessage, #meaningBox { font-size: 1rem; }
-      .wordItem { font-size: 1rem; padding: 4px 10px; }
-      #meaningBox {
-        padding: 10px 5px 10px 5px;
-        min-width: 0;
-        width: 97vw;
-        max-width: 99vw;
-      }
-    }
   </style>
 </head>
 <body>
-  <!-- 초기화면 상단 홈버튼+타이틀 -->
-  <div id="topBar">
-    <button class="homeBtn" onclick="location.replace('https://nmyway77.github.io/home/');">홈으로</button>
-    <span id="pageTitle">수능완성 2200 – [목동서로 영어학원]</span>
-  </div>
-  <div id="initMessage">
-    단어를 클릭하면 발음과 뜻이 나옵니다.
-  </div>
-  <!-- 단어 클릭시 나타나는 뜻+홈버튼 고정창 -->
-  <div id="meaningBox">
-    <span id="meaningText"></span>
-    <button class="homeBtn" onclick="location.replace('https://nmyway77.github.io/home/');">홈으로</button>
-  </div>
+  <button class="homeBtn" onclick="location.replace('https://nmyway77.github.io/home/');">홈으로</button>
+  <button id="showWords">수능완성 2200 – [목동서로 영어학원]</button>
+  <div id="meaningBox">단어를 클릭하면 발음과 뜻이 나옵니다.</div>
   <div id="wordList"></div>
+
   <script>
-    // 단어 데이터
-    const words = [
+    const dictionary = [
+      { heading: '1과 단어' },
 { word: 'additional',    meaning: '추가적인' },
 { word: 'adhere',        meaning: '고수하다, 들러붙다' },
 { word: 'ambitious',     meaning: '야심 있는' },
@@ -260,65 +248,50 @@
   { word: 'inflate', meaning: '부풀리다' },
   { word: 'personal', meaning: '개인적인' },
   { word: 'personnel', meaning: '직원, 인원' },
-      { word: "computer", meaning: "컴퓨터" }
+      { word: 'marginalize',   meaning: '소외시키다' }
     ];
 
-    // 미국식 여성음성 강제 선택
-    function speak(word) {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utter = new SpeechSynthesisUtterance(word);
-        utter.lang = "en-US";
-        utter.rate = 1;
-        let voices = window.speechSynthesis.getVoices();
-        let usFemaleVoices = voices.filter(v =>
-          v.lang === "en-US" &&
-          v.name &&
-          (
-            v.name.toLowerCase().includes("female") ||
-            v.name.toLowerCase().includes("woman") ||
-            v.name.toLowerCase().includes("samantha") ||
-            v.name.toLowerCase().includes("jenny") ||
-            v.name.toLowerCase().includes("joanna") ||
-            v.name.toLowerCase().includes("kendra") ||
-            v.name.toLowerCase().includes("kimberly") ||
-            v.name.toLowerCase().includes("ivy") ||
-            v.name.toLowerCase().includes("mary")
-          )
-        );
-        utter.voice =
-          usFemaleVoices[0] ||
-          voices.find(v => v.lang === "en-US" && v.name && v.name.toLowerCase().includes("female")) ||
-          voices.find(v => v.lang === "en-US") ||
-          voices[0] || null;
-        if (!voices.length) {
-          window.speechSynthesis.onvoiceschanged = () => speak(word);
-          return;
-        }
-        window.speechSynthesis.speak(utter);
-      }
-    }
+    const showBtn = document.getElementById('showWords');
+    const wordListDiv = document.getElementById('wordList');
+    const meaningBox = document.getElementById('meaningBox');
 
-    // 단어 목록 표시
-    function showWords() {
-      const listDiv = document.getElementById('wordList');
-      listDiv.innerHTML = "";
-      words.forEach(item => {
-        const span = document.createElement('span');
-        span.textContent = item.word;
-        span.className = "wordItem";
-        span.onclick = () => {
-          // 상단바/초기 메시지 숨기고, 뜻 박스/홈버튼 고정창 보이기
-          document.getElementById('topBar').style.display = "none";
-          document.getElementById('initMessage').style.display = "none";
-          document.getElementById('meaningBox').style.display = "flex";
-          document.getElementById('meaningText').textContent = `${item.word} / ${item.meaning}`;
-          speak(item.word);
-        };
-        listDiv.appendChild(span);
+    function renderWords() {
+      wordListDiv.innerHTML = '';
+      dictionary.forEach(entry => {
+        if (entry.heading) {
+          const lineBreak = document.createElement('div');
+          lineBreak.style.flexBasis = '100%';
+          wordListDiv.appendChild(lineBreak);
+
+          const h = document.createElement('div');
+          h.textContent = entry.heading;
+          h.className = 'lessonHeading';
+          wordListDiv.appendChild(h);
+        } else {
+          const span = document.createElement('span');
+          span.textContent = entry.word;
+          span.className = 'wordItem';
+          span.addEventListener('click', () => {
+            meaningBox.textContent = `${entry.word} → ${entry.meaning}`;
+            // 미국식 여성음성 우선!
+            const utter = new SpeechSynthesisUtterance(entry.word);
+            utter.lang = 'en-US';
+            const voices = speechSynthesis.getVoices();
+            utter.voice =
+              voices.find(v => v.name === 'Google US English') ||
+              voices.find(v => v.name === 'Samantha') ||
+              voices.find(v => v.lang === 'en-US') ||
+              null;
+            speechSynthesis.speak(utter);
+          });
+          wordListDiv.appendChild(span);
+        }
       });
     }
-    showWords();
+
+    window.speechSynthesis.onvoiceschanged = renderWords;
+    showBtn.addEventListener('click', renderWords);
+    renderWords();
   </script>
 </body>
 </html>
