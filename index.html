@@ -28,6 +28,11 @@
       border-bottom: 1px solid #ccc;
       z-index: 10;
       margin-bottom: 10px;
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between;
+      min-height: 56px; 
+      border-radius: 10px;
     }
     #wordList { padding-bottom: 20px; }
     .lessonHeading { margin-top: 20px; font-size: 20px; font-weight: bold; }
@@ -40,89 +45,51 @@
       background: #f0f0f0;
       border-radius: 4px;
     }
+    .homeBtn {
+      padding:8px 18px;
+      margin-left:16px;
+      border:none;
+      background:#2c3e50;
+      color:#fff;
+      border-radius:8px;
+      cursor:pointer;
+      font-size:1rem;
+    }
+    .homeBtn:hover { background: #466080; }
   </style>
 </head>
 <body>
- <div id="meaningBox" style="display: flex; align-items: center; justify-content: space-between; min-height: 56px; font-size: 1.2rem; padding: 18px 20px; background: #f2f4fa; border-radius: 10px; margin: 18px 0;">
+  <div id="meaningBox">
     <span id="meaningText">단어를 클릭하면 뜻이 이곳에 표시됩니다.</span>
-    <button onclick="location.replace('https://nmyway77.github.io/home/');"
-            style="padding:8px 18px;margin-left:16px;border:none;background:#2c3e50;color:#fff;border-radius:8px;cursor:pointer;font-size:1rem;">
-      홈으로
-    </button>
+    <button class="homeBtn" onclick="location.replace('https://nmyway77.github.io/home/');">홈으로</button>
   </div>
   <div id="wordList"></div>
-
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const dictionary = [
-        { heading: '1과 단어' },
-        { word: 'apple',     meaning: '사과' },
-        { word: 'banana',    meaning: '바나나' },
-        { word: 'grape',     meaning: '포도' },
-                { word: 'apple',     meaning: '사과' },
-        { word: 'banana',    meaning: '바나나' },
-        { word: 'grape',     meaning: '포도' },
-        { heading: '2과 단어' },
-        { word: 'delicious', meaning: '맛있는' },
-        { word: 'fruit',     meaning: '과일' }
-      ];
+    // 단어 데이터
+    const words = [
+      { word: "apple", meaning: "사과" },
+      { word: "banana", meaning: "바나나" },
+      { word: "elephant", meaning: "코끼리" },
+      { word: "computer", meaning: "컴퓨터" }
+    ];
 
-      const showBtn = document.getElementById('showWords');
-      const wordListDiv = document.getElementById('wordList');
-      const meaningBox = document.getElementById('meaningBox');
+    // 단어 목록 보여주기
+    function showWords() {
+      const listDiv = document.getElementById('wordList');
+      listDiv.innerHTML = ""; // 초기화
+      words.forEach(item => {
+        const span = document.createElement('span');
+        span.textContent = item.word;
+        span.className = "wordItem";
+        span.onclick = () => {
+          document.getElementById('meaningText').textContent = `${item.word} / ${item.meaning}`;
+        };
+        listDiv.appendChild(span);
+      });
+    }
 
-      // 보이스 목록 로드 (SpeechSynthesis 지원 여부 체크)
-      let voices = [];
-      if ('speechSynthesis' in window) {
-        function loadVoices() {
-          voices = speechSynthesis.getVoices() || [];
-        }
-        speechSynthesis.onvoiceschanged = loadVoices;
-        loadVoices();
-      }
-
-      // 미국식 여성 보이스 선택 및 발음 재생
-      function speak(word) {
-        if ('speechSynthesis' in window) {
-          const utter = new SpeechSynthesisUtterance(word);
-          utter.lang = 'en-US';
-          // 우선 en-US 여성 보이스, iOS엔 Samantha/Karen
-          const voice = voices.find(v => v.lang === 'en-US' && /female|Samantha|Karen/i.test(v.name))
-                      || voices.find(v => v.lang.startsWith('en') && /female/i.test(v.name))
-                      || voices.find(v => v.lang.startsWith('en'));
-          if (voice) utter.voice = voice;
-          speechSynthesis.cancel();
-          speechSynthesis.speak(utter);
-        } else {
-          console.error('TTS 지원 불가');
-        }
-      }
-
-      // 단어 리스트 렌더링
-      function renderWords() {
-        wordListDiv.innerHTML = '';
-        dictionary.forEach(entry => {
-          if (entry.heading) {
-            const h = document.createElement('div');
-            h.textContent = entry.heading;
-            h.className = 'lessonHeading';
-            wordListDiv.appendChild(h);
-          } else {
-            const span = document.createElement('span');
-            span.textContent = entry.word;
-            span.className = 'wordItem';
-            span.addEventListener('click', () => {
-              meaningBox.textContent = `${entry.word} → ${entry.meaning}`;
-              speak(entry.word);
-            });
-            wordListDiv.appendChild(span);
-          }
-        });
-      }
-
-      showBtn.addEventListener('click', renderWords);
-      renderWords();
-    });
+    // 페이지 로딩 시 자동 표시
+    showWords();
   </script>
 </body>
 </html>
