@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>수능완성 2000 – 단어 클릭 및 뜻 보기 (완전版)</title>
+  <title>단어 클릭 & 소리 재생 예제 (Howler.js + 디버그)</title>
   <style>
     body { font-family: Arial, sans-serif; margin: 0; padding: 10px; }
     #showWords { padding: 10px 20px; font-size: 16px;
@@ -20,21 +20,31 @@
     .wordItem { display: inline-block; font-size: 20px;
       cursor: pointer; margin: 5px; padding: 5px 10px;
       background: #f0f0f0; border-radius: 4px; }
+    #debug { background: #f9f9f9; padding: 10px; margin-top: 20px;
+      white-space: pre-wrap; font-size: 14px; color: #555; height: 100px; overflow-y: auto; }
   </style>
+  <!-- Howler.js 로드 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 </head>
 <body>
   <button id="showWords">단어 목록 전체 보기</button>
   <div id="meaningBox">단어를 클릭하면 뜻이 이곳에 표시됩니다.</div>
   <div id="wordList"></div>
+  <pre id="debug">[디버그 로그]
+</pre>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
+      // 디버그 메시지를 화면에 출력
+      function log(msg) {
+        const dbg = document.getElementById('debug');
+        dbg.textContent += msg + '\n';
+      }
+
+      // 사전 데이터: audio를 실제 경로로 교체하세요
       const dictionary = [
         { heading: '1과 단어' },
         { word: 'apple',     meaning: '사과',      audio: 'audio/apple.mp3' },
-        { word: 'banana',    meaning: '바나나',    audio: 'audio/banana.mp3' },
-        { word: 'grape',     meaning: '포도',      audio: 'audio/grape.mp3' },
-                { word: 'apple',     meaning: '사과',      audio: 'audio/apple.mp3' },
         { word: 'banana',    meaning: '바나나',    audio: 'audio/banana.mp3' },
         { word: 'grape',     meaning: '포도',      audio: 'audio/grape.mp3' },
         { heading: '2과 단어' },
@@ -46,35 +56,24 @@
       const wordListDiv = document.getElementById('wordList');
       const meaningBox = document.getElementById('meaningBox');
 
-      // TTS 동적 사용 여부 확인
-      const hasTTS = 'speechSynthesis' in window;
-      let voices = [];
-      if (hasTTS) {
-        function loadVoices() {
-          voices = speechSynthesis.getVoices();
-        }
-        speechSynthesis.onvoiceschanged = loadVoices;
-        loadVoices();
-      }
-
-      // 클릭 핸들: TTS 우선, MP3 풀백
+      // 단어 클릭 핸들러
       function handleClick(entry) {
+        log('[클릭] ' + entry.word);
+        // 뜻 표시
         meaningBox.textContent = `${entry.word} → ${entry.meaning}`;
-        if (hasTTS) {
-          const utt = new SpeechSynthesisUtterance(entry.word);
-          utt.lang = 'en-US';
-          // 여성 목소리 우선 선택
-          const voice = voices.find(v => v.lang.startsWith('en') && /female|Samantha|Karen/i.test(v.name))
-                      || voices.find(v => v.lang.startsWith('en'));
-          if (voice) utt.voice = voice;
-          speechSynthesis.cancel();
-          speechSynthesis.speak(utt);
-        } else if (entry.audio) {
-          new Audio(entry.audio).play().catch(e => console.error(e));
+        // Howler.js로 오디오 재생
+        if (entry.audio) {
+          log('→ 재생 파일: ' + entry.audio);
+          const sound = new Howl({ src: [entry.audio] });
+          sound.play();
+        } else {
+          log('→ 오디오 경로가 없습니다.');
         }
       }
 
+      // 단어 목록 렌더링
       function renderWords() {
+        log('[렌더링 시작] 총 ' + dictionary.length + '개 항목');
         wordListDiv.innerHTML = '';
         dictionary.forEach(entry => {
           if (entry.heading) {
@@ -90,14 +89,21 @@
             wordListDiv.appendChild(span);
           }
         });
+        log('[렌더링 완료]');
       }
 
-      showBtn.addEventListener('click', renderWords);
+      showBtn.addEventListener('click', () => {
+        log('[버튼 클릭] 목록 다시 표시');
+        renderWords();
+      });
+
+      // 초기 렌더링
       renderWords();
     });
   </script>
 </body>
 </html>
+
 
 
 
