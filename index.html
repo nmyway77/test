@@ -44,13 +44,14 @@
 </head>
 <body>
   <button id="showWords">단어 목록 전체 보기</button>
-<div id="meaningBox" style="display: flex; align-items: center; justify-content: space-between; min-height: 56px; font-size: 1.2rem; padding: 18px 20px; background: #f2f4fa; border-radius: 10px; margin: 18px 0;">
-  <span id="meaningText">단어를 클릭하면 뜻이 이곳에 표시됩니다.</span>
-  <button onclick="location.replace('https://nmyway77.github.io/home/');"
-          style="padding:8px 18px;margin-left:16px;border:none;background:#2c3e50;color:#fff;border-radius:8px;cursor:pointer;font-size:1rem;">
-    홈으로
-  </button>
-</div>
+  <div id="meaningBox" style="display: flex; align-items: center; justify-content: space-between; min-height: 56px; font-size: 1.2rem; padding: 18px 20px; background: #f2f4fa; border-radius: 10px; margin: 18px 0;">
+    <span id="meaningText">단어를 클릭하면 뜻이 이곳에 표시됩니다.</span>
+    <button onclick="location.replace('https://nmyway77.github.io/home/');"
+            style="padding:8px 18px;margin-left:16px;border:none;background:#2c3e50;color:#fff;border-radius:8px;cursor:pointer;font-size:1rem;">
+      홈으로
+    </button>
+  </div>
+  <div id="wordList"></div>
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
