@@ -70,14 +70,21 @@
       cursor: pointer;
       font-size: 1rem;
       margin-right: 10px;
+      flex-shrink: 0;
     }
     .homeBtn:hover { background: #466080; }
+    #meaningText {
+      display: inline-block;
+      font-size: 19px;
+    }
   </style>
 </head>
 <body>
-  <button class="homeBtn" onclick="location.replace('https://nmyway77.github.io/home/');">홈으로</button>
   <button id="showWords">수능완성 2200 – [목동서로 영어학원]</button>
-  <div id="meaningBox">단어를 클릭하면 발음과 뜻이 나옵니다.</div>
+  <div id="meaningBox">
+    <button class="homeBtn" onclick="location.replace('https://nmyway77.github.io/home/');">홈으로</button>
+    <span id="meaningText">단어를 클릭하면 발음과 뜻이 나옵니다.</span>
+  </div>
   <div id="wordList"></div>
 
   <script>
@@ -253,7 +260,7 @@
 
     const showBtn = document.getElementById('showWords');
     const wordListDiv = document.getElementById('wordList');
-    const meaningBox = document.getElementById('meaningBox');
+    const meaningText = document.getElementById('meaningText');
 
     function renderWords() {
       wordListDiv.innerHTML = '';
@@ -272,7 +279,7 @@
           span.textContent = entry.word;
           span.className = 'wordItem';
           span.addEventListener('click', () => {
-            meaningBox.textContent = `${entry.word} → ${entry.meaning}`;
+            meaningText.textContent = `${entry.word} → ${entry.meaning}`;
             // 미국식 여성음성 우선!
             const utter = new SpeechSynthesisUtterance(entry.word);
             utter.lang = 'en-US';
