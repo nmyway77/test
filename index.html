@@ -73,6 +73,24 @@
       { word: "computer", meaning: "컴퓨터" }
     ];
 
+    // TTS(미국인 여자)로 단어 읽기
+    function speak(word) {
+      // Chrome, Edge, iOS Safari 등 대부분 지원
+      if ('speechSynthesis' in window) {
+        // 우선 실행 중인 발음 있으면 정지
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(word);
+        utter.lang = "en-US";
+        utter.rate = 1; // 속도(기본:1, 느리게 0.85~1)
+        // 여성음성 우선 선택
+        const voices = window.speechSynthesis.getVoices();
+        const enFemale = voices.find(v => v.lang.startsWith("en") && v.name && v.name.toLowerCase().includes("female"));
+        // 미국 여성 음성 우선, 없으면 기본 en-US
+        utter.voice = enFemale || voices.find(v => v.lang === "en-US") || null;
+        window.speechSynthesis.speak(utter);
+      }
+    }
+
     // 단어 목록 보여주기
     function showWords() {
       const listDiv = document.getElementById('wordList');
@@ -83,16 +101,19 @@
         span.className = "wordItem";
         span.onclick = () => {
           document.getElementById('meaningText').textContent = `${item.word} / ${item.meaning}`;
+          speak(item.word); // 클릭시 발음!
         };
         listDiv.appendChild(span);
       });
     }
 
     // 페이지 로딩 시 자동 표시
+    // 일부 브라우저(특히 Chrome)에서는 사용자가 처음 상호작용(클릭 등) 후부터 TTS 작동
     showWords();
   </script>
 </body>
 </html>
+
 
 
 
